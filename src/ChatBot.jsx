@@ -37,7 +37,7 @@ const ChatBot = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://162.244.82.128:4003/chatbots/get-styles/${id}`);
+                const response = await fetch(`http://162.244.82.128:4003/chatbots/get-single-chatbot/${id}`);
                 const data = await response.json();
                 console.log('data', data);
                 const { chatbotStyles, chatbotDetails } = data?.data || {};

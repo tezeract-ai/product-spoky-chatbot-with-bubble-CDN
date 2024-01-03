@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { TypeAnimation } from "react-type-animation";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-import CircularProgress from '@mui/material/CircularProgress'; 
+import CircularProgress from '@mui/material/CircularProgress';
 
 const ChatBot = () => {
     const { id } = useParams();
@@ -202,11 +202,16 @@ const ChatBot = () => {
                             <img
                                 src={styles.icon}
                                 alt="Chatbot Icon"
-                                style={{ width: '40px', height: '40px', marginRight: '10px' }}
+                                style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    marginRight: '10px',
+                                    borderRadius: '50%', 
+                                }}
                             />
                         )}
+
                         <div style={{ fontSize: '24px', padding: '5px 0', color: 'white', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{chatbotname}</div>
-                        <div style={{ fontSize: '18px' }}>{styles.tagline}</div>
                     </div>
 
                     <div
@@ -243,12 +248,10 @@ const ChatBot = () => {
                                             width: '50px',
                                             height: '50px',
                                             marginRight: '10px',
-                                            alignItems: 'center',
-                                            // alignSelf: 'flex-end',
+                                            borderRadius: '50%',
                                         }}
                                     />
                                 )}
-
                                 <div
                                     style={{
                                         background:
@@ -259,7 +262,7 @@ const ChatBot = () => {
                                         padding: '10px',
                                         borderRadius: '8px',
                                         maxWidth: '70%',
-                                        textAlign:'left',
+                                        textAlign: 'left',
                                     }}
                                 >
                                     {message.sender === 'bot' ? (
@@ -276,7 +279,7 @@ const ChatBot = () => {
                         ))}
                         {loadingBotResponse && (
                             <div style={{ textAlign: 'center', marginTop: '10px' }}>
-                            <CircularProgress />
+                                <CircularProgress />
                             </div>
                         )}
                     </div>
@@ -338,7 +341,6 @@ const ChatBot = () => {
                             width: '100%',
                         }}
                     >
-                        <div style={{ fontSize: '18px', marginTop: '5px', color: 'black' }}>Building an Unbiased World</div>
                         <div style={{ fontSize: '18px' }}>{styles.tagline}</div>
                     </div>
 
@@ -358,7 +360,6 @@ const ChatBot = () => {
                             background: `linear-gradient(to right, ${styles.headerGradientOne}, 
                              ${styles.headerGradientTwo})`,
                         }}></div>
-                        {/* <div style={{ fontSize: '18px' }}>{styles.}</div> */}
                     </div>
                 </>
             )}

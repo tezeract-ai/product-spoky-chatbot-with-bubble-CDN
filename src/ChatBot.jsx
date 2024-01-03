@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { TypeAnimation } from "react-type-animation";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import CircularProgress from '@mui/material/CircularProgress'; 
 
 const ChatBot = () => {
     const { id } = useParams();
@@ -33,6 +34,9 @@ const ChatBot = () => {
     const [role, setRole] = useState('');
     const [loadingBotResponse, setLoadingBotResponse] = useState(false);
 
+    const [errorFetchingStyles, setErrorFetchingStyles] = useState(false);
+    const [notFoundError, setNotFoundError] = useState(false);
+
     const messagesContainerRef = useRef(null);
 
     useEffect(() => {
@@ -40,6 +44,11 @@ const ChatBot = () => {
             try {
                 const response = await fetch(`http://162.244.82.128:4003/chatbots/get-single-chatbot/${id}`);
                 const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Error fetching styles');
+                }
+
                 const { chatbotStyles, chatbotDetails } = data?.data || {};
                 const initialMessage = chatbotDetails?.initialMessage;
                 const name = chatbotDetails?.name;
@@ -67,6 +76,11 @@ const ChatBot = () => {
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching styles:', error);
+                setErrorFetchingStyles(true);
+
+                if (error && error.message === "The requested URL was not found on this server") {
+                    setNotFoundError(true);
+                }
             }
         };
 
@@ -82,10 +96,10 @@ const ChatBot = () => {
     const sendMessageToAPI = async (userMessage) => {
         const formdata = new FormData();
         formdata.append("query", userMessage);
-        formdata.append("chatbot_id", "6592837258dce0bb4d220e9f");
+        formdata.append("chatbot_id", "65940b045daf358558a2258a");
         formdata.append("verticals", role);
         formdata.append("user_id", 'shahzain');
-        formdata.append("user_chatid",'Qudsia');
+        formdata.append("user_chatid", 'Qudsia');
 
         try {
             const response = await fetch('http://162.244.82.128:8005/chat', {
@@ -145,17 +159,31 @@ const ChatBot = () => {
                 fontSize: styles.fontSize,
                 fontFamily: styles.fontStyle,
                 color: styles.fontColor,
-                width: '800px',
-                margin: 'auto',
+                width: '1200px',
+                height: '820px',
                 boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
                 borderRadius: '8px',
                 overflow: 'hidden',
+                marginTop: '2rem',
             }}
         >
             {loading ? (
-                <div style={{ textAlign: 'center', padding: '20px' }}>
-                    <p>Loading...</p>
+                <div style={{ textAlign: 'center', padding: '20px', fontFamily: 'fantasy', fontSize: '2rem' }}>
+                    <p>
+                        {errorFetchingStyles ? (
+                            <>
+                                <img src="https://app.stammer.ai/static/common/img/illustrations/errors/404.5e247682dc69.svg" alt="Error" style={{
+                                    height: '60%', width: '70%'
+                                }} />
+                                <br />
+                                {notFoundError ? 'Error fetching styles' : 'The requested URL was not found on this server'}
+                            </>
+                        ) : (
+                            'Loading...'
+                        )}
+                    </p>
                 </div>
+
             ) : (
                 <>
                     <div
@@ -163,7 +191,7 @@ const ChatBot = () => {
                             background: `linear-gradient(to right, ${styles.headerGradientOne}, ${styles.headerGradientTwo})`,
                             padding: '10px',
                             textAlign: 'center',
-                            height: '30px',
+                            height: '50px',
                             width: '100%',
                             display: 'flex',
                             alignItems: 'center',
@@ -174,7 +202,7 @@ const ChatBot = () => {
                             <img
                                 src={styles.icon}
                                 alt="Chatbot Icon"
-                                style={{ width: '24px', height: '24px', marginRight: '10px' }}
+                                style={{ width: '40px', height: '40px', marginRight: '10px' }}
                             />
                         )}
                         <div style={{ fontSize: '24px', padding: '5px 0', color: 'white', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{chatbotname}</div>
@@ -187,8 +215,13 @@ const ChatBot = () => {
                             overflowY: 'auto',
                             padding: '15px',
                             borderBottom: `1px solid ${styles.userChatBubbleColor}`,
+                            backgroundColor: '#F5F5F5',
+                            borderRadius: '24px',
+                            width: '98%',
+                            position: 'relative',
+                            WebkitOverflowScrolling: 'touch', // Add this property for smoother scrolling on iOS devices
                             scrollbarWidth: 'thin',
-                            scrollbarColor: `${styles.headerGradientOne} ${styles.headerGradientTwo}`,
+                            scrollbarColor: 'red transparent', // Set the color of the thumb and the track
                         }}
                         ref={messagesContainerRef}
                     >
@@ -207,10 +240,11 @@ const ChatBot = () => {
                                         src={styles.icon}
                                         alt="Bot Icon"
                                         style={{
-                                            width: '40px',
-                                            height: '40px',
+                                            width: '50px',
+                                            height: '50px',
                                             marginRight: '10px',
-                                            alignSelf: 'flex-end',
+                                            alignItems: 'center',
+                                            // alignSelf: 'flex-end',
                                         }}
                                     />
                                 )}
@@ -225,6 +259,7 @@ const ChatBot = () => {
                                         padding: '10px',
                                         borderRadius: '8px',
                                         maxWidth: '70%',
+                                        textAlign:'left',
                                     }}
                                 >
                                     {message.sender === 'bot' ? (
@@ -241,7 +276,7 @@ const ChatBot = () => {
                         ))}
                         {loadingBotResponse && (
                             <div style={{ textAlign: 'center', marginTop: '10px' }}>
-                                <p>Loading...</p>
+                            <CircularProgress />
                             </div>
                         )}
                     </div>
@@ -286,7 +321,7 @@ const ChatBot = () => {
                             }}
                             onClick={handleSendMessage}
                         >
-    <FontAwesomeIcon icon={faPaperPlane} style={{ marginRight: '5px' }} />
+                            <FontAwesomeIcon icon={faPaperPlane} style={{ marginRight: '5px' }} />
 
                         </button>
                     </div>
@@ -313,16 +348,17 @@ const ChatBot = () => {
                             padding: '10px',
                             textAlign: 'center',
                             borderTop: `1px solid ${styles.userChatBubbleColor}`,
-                            height: '30px',
+                            height: '50px',
                             width: '100%',
+                            marginTop: '2.7rem',
                         }}
                     >
                         <div style={{
-                            fontSize: '24px', marginBottom: '5px',
+                            fontSize: '24px',
                             background: `linear-gradient(to right, ${styles.headerGradientOne}, 
                              ${styles.headerGradientTwo})`,
                         }}></div>
-                        <div style={{ fontSize: '18px' }}>{styles.tagline}</div>
+                        {/* <div style={{ fontSize: '18px' }}>{styles.}</div> */}
                     </div>
                 </>
             )}

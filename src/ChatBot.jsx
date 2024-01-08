@@ -3,8 +3,8 @@ import { useParams } from 'react-router-dom';
 import { TypeAnimation } from "react-type-animation";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-import CircularProgress from '@mui/material/CircularProgress';
-
+import Lottie from 'react-lottie';
+import animationData from '../src/assets/Animination.json';
 const ChatBot = () => {
     const { id } = useParams();
 
@@ -24,6 +24,7 @@ const ChatBot = () => {
         typingSpeed: '',
         userChatBubbleColor: 'lightblue',
     });
+    const [botIsTyping, setBotIsTyping] = useState(false);
 
     const [messages, setMessages] = useState([
         { content: 'Hello, I am ChatBot! How can I help you today?', sender: 'bot' },
@@ -32,7 +33,7 @@ const ChatBot = () => {
     const [userInput, setUserInput] = useState('');
     const [user_id, setUserId] = useState('');
     const [role, setRole] = useState('');
-    const [loadingBotResponse, setLoadingBotResponse] = useState(false);
+    // const [loadingBotResponse, setLoadingBotResponse] = useState(false);
 
     const [errorFetchingStyles, setErrorFetchingStyles] = useState(false);
     const [notFoundError, setNotFoundError] = useState(false);
@@ -42,6 +43,7 @@ const ChatBot = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                
                 const response = await fetch(`http://162.244.82.128:4003/chatbots/get-single-chatbot/${id}`);
                 const data = await response.json();
 
@@ -51,6 +53,7 @@ const ChatBot = () => {
 
                 const { chatbotStyles, chatbotDetails } = data?.data || {};
                 const initialMessage = chatbotDetails?.initialMessage;
+                console.log(chatbotDetails, 'chatbotDetails');
                 const name = chatbotDetails?.name;
                 setChatbotName(name);
                 const chatbotRole = chatbotDetails?.role;
@@ -58,6 +61,7 @@ const ChatBot = () => {
                 setUserId(userId);
                 setRole(chatbotRole);
                 setMessages([{ content: initialMessage, sender: 'bot' }]);
+                
                 setStyles({
                     bgColor: chatbotStyles?.bgcolor,
                     chatBubbleColor: chatbotStyles?.chatBubbleColor,
@@ -94,6 +98,9 @@ const ChatBot = () => {
     }, [messages]);
 
     const sendMessageToAPI = async (userMessage) => {
+        console.log('true');
+        setBotIsTyping(true);
+
         const formdata = new FormData();
         formdata.append("query", userMessage);
         formdata.append("chatbot_id", "65940b045daf358558a2258a");
@@ -112,9 +119,26 @@ const ChatBot = () => {
             });
 
             const result = await response.json();
+            // console.log(result);
+            // const {Message}=result;
+            // console.log(Message);
+            setTimeout(() => {
+                console.log("try");
+                setBotIsTyping(false);
+            }, 5000)
+            // setMessages((prevMessages) => [
+            //     ...prevMessages,
+            //     { content:Message, sender:"bot" }
+            // ]);
+
             return result;
+
         } catch (error) {
             console.error('Error sending message to API:', error);
+            setTimeout(() => {
+                console.log("catch");
+                setBotIsTyping(false);
+            }, 5000)
             throw error;
         }
     };
@@ -125,6 +149,7 @@ const ChatBot = () => {
             { content, sender }
         ]);
     };
+    console.log(messages);
 
     const handleUserInput = (e) => {
         setUserInput(e.target.value);
@@ -137,36 +162,34 @@ const ChatBot = () => {
             const userMessage = userInput;
 
             addMessage(userMessage, 'user');
-            setLoadingBotResponse(true);
+            // setLoadingBotResponse(true);
 
             try {
                 const apiResponse = await sendMessageToAPI(userMessage);
                 const botResponse = apiResponse.Message || 'Sorry, something went wrong.';
-                addMessage(botResponse, 'bot');
+                const Message = apiResponse?.Message
+
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { content: Message, sender: 'bot' }
+                ]);
+                // addMessage(botResponse, 'bot');
             } catch (error) {
-                console.error('Error handling API response:', error);
-                addMessage('Sorry, something went wrong.', 'bot');
+                console.error('Error sending message to API:', error);
+                console.log('API Error Response:', error.response); // if available
+                setTimeout(() => {
+                    console.log('catch');
+                    setBotIsTyping(false);
+                }, 5000);
+                throw error;
             } finally {
-                setLoadingBotResponse(false);
+                // setLoadingBotResponse(false);
             }
         }
     };
-
+    console.log(messages, 'setMessages')
     return (
-        <div
-            style={{
-                backgroundColor: styles?.bgColor,
-                fontSize: styles.fontSize,
-                fontFamily: styles.fontStyle,
-                color: styles.fontColor,
-                width: '1200px',
-                height: '820px',
-                boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-                borderRadius: '8px',
-                overflow: 'hidden',
-                marginTop: '2rem',
-            }}
-        >
+        <div>
             {loading ? (
                 <div style={{ textAlign: 'center', padding: '20px', fontFamily: 'fantasy', fontSize: '2rem' }}>
                     <p>
@@ -183,9 +206,21 @@ const ChatBot = () => {
                         )}
                     </p>
                 </div>
-
             ) : (
-                <>
+                <div
+                    style={{
+                        backgroundColor: styles?.bgColor,
+                        fontSize: styles.fontSize,
+                        fontFamily: styles.fontStyle,
+                        color: styles.fontColor,
+                        width: '1200px',
+                        height: '820px',
+                        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+                        borderRadius: '8px',
+                        overflow: 'hidden',
+                        marginTop: '2rem',
+                    }}
+                >
                     <div
                         style={{
                             background: `linear-gradient(to right, ${styles.headerGradientOne}, ${styles.headerGradientTwo})`,
@@ -206,7 +241,7 @@ const ChatBot = () => {
                                     width: '40px',
                                     height: '40px',
                                     marginRight: '10px',
-                                    borderRadius: '50%', 
+                                    borderRadius: '50%',
                                 }}
                             />
                         )}
@@ -220,13 +255,13 @@ const ChatBot = () => {
                             overflowY: 'auto',
                             padding: '15px',
                             borderBottom: `1px solid ${styles.userChatBubbleColor}`,
-                            backgroundColor: '#F5F5F5',
+                            backgroundColor: `${styles.bgColor}`,
                             borderRadius: '24px',
                             width: '98%',
                             position: 'relative',
-                            WebkitOverflowScrolling: 'touch', // Add this property for smoother scrolling on iOS devices
+                            WebkitOverflowScrolling: 'touch',
                             scrollbarWidth: 'thin',
-                            scrollbarColor: 'red transparent', // Set the color of the thumb and the track
+                            scrollbarColor: 'red transparent',
                         }}
                         ref={messagesContainerRef}
                     >
@@ -265,23 +300,42 @@ const ChatBot = () => {
                                         textAlign: 'left',
                                     }}
                                 >
-                                    {message.sender === 'bot' ? (
-                                        <TypeAnimation
-                                            sequence={[message.content]}
-                                            speed={parseInt(styles.typingSpeed)}
-                                            cursor={false}
-                                        />
+                                    {(message.sender === 'bot' && index === messages?.length - 1) ? (
+                                        <>
+
+                                            {botIsTyping && (
+
+                                                <div style={{ textAlign: 'center', marginTop: '10px' }}>
+
+                                                    <Lottie
+                                                        options={{
+                                                            loop: true,
+                                                            autoplay: true,
+                                                            animationData: animationData,
+                                                            rendererSettings: {
+                                                                preserveAspectRatio: 'xMidYMid slice',
+                                                            },
+                                                        }}
+                                                        height={100}
+                                                        width={100}
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {/* {!loadingBotResponse && (
+                                                <TypeAnimation
+                                                    sequence={[message.content]}
+                                                    speed={parseInt(styles.typingSpeed)}
+                                                    cursor={false}
+                                                />
+                                            )} */}
+                                        </>
                                     ) : (
                                         message.content
                                     )}
                                 </div>
                             </div>
                         ))}
-                        {loadingBotResponse && (
-                            <div style={{ textAlign: 'center', marginTop: '10px' }}>
-                                <CircularProgress />
-                            </div>
-                        )}
                     </div>
 
                     <div
@@ -325,7 +379,6 @@ const ChatBot = () => {
                             onClick={handleSendMessage}
                         >
                             <FontAwesomeIcon icon={faPaperPlane} style={{ marginRight: '5px' }} />
-
                         </button>
                     </div>
 
@@ -361,7 +414,7 @@ const ChatBot = () => {
                              ${styles.headerGradientTwo})`,
                         }}></div>
                     </div>
-                </>
+                </div>
             )}
         </div>
     );

@@ -33,7 +33,6 @@ const ChatBot = () => {
     const [userInput, setUserInput] = useState('');
     const [user_id, setUserId] = useState('');
     const [role, setRole] = useState('');
-    // const [loadingBotResponse, setLoadingBotResponse] = useState(false);
 
     const [errorFetchingStyles, setErrorFetchingStyles] = useState(false);
     const [notFoundError, setNotFoundError] = useState(false);
@@ -43,7 +42,7 @@ const ChatBot = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                
+
                 const response = await fetch(`http://162.244.82.128:4003/chatbots/get-single-chatbot/${id}`);
                 const data = await response.json();
 
@@ -61,7 +60,7 @@ const ChatBot = () => {
                 setUserId(userId);
                 setRole(chatbotRole);
                 setMessages([{ content: initialMessage, sender: 'bot' }]);
-                
+
                 setStyles({
                     bgColor: chatbotStyles?.bgcolor,
                     chatBubbleColor: chatbotStyles?.chatBubbleColor,
@@ -119,18 +118,11 @@ const ChatBot = () => {
             });
 
             const result = await response.json();
-            // console.log(result);
-            // const {Message}=result;
-            // console.log(Message);
+
             setTimeout(() => {
                 console.log("try");
                 setBotIsTyping(false);
             }, 5000)
-            // setMessages((prevMessages) => [
-            //     ...prevMessages,
-            //     { content:Message, sender:"bot" }
-            // ]);
-
             return result;
 
         } catch (error) {
@@ -166,6 +158,7 @@ const ChatBot = () => {
 
             try {
                 const apiResponse = await sendMessageToAPI(userMessage);
+                console.log('apiresponse');
                 const botResponse = apiResponse.Message || 'Sorry, something went wrong.';
                 const Message = apiResponse?.Message
 
@@ -176,7 +169,7 @@ const ChatBot = () => {
                 // addMessage(botResponse, 'bot');
             } catch (error) {
                 console.error('Error sending message to API:', error);
-                console.log('API Error Response:', error.response); // if available
+                console.log('API Error Response:', error.response);
                 setTimeout(() => {
                     console.log('catch');
                     setBotIsTyping(false);
@@ -265,6 +258,7 @@ const ChatBot = () => {
                         }}
                         ref={messagesContainerRef}
                     >
+
                         {messages.map((message, index) => (
                             <div
                                 key={index}
@@ -300,13 +294,10 @@ const ChatBot = () => {
                                         textAlign: 'left',
                                     }}
                                 >
-                                    {(message.sender === 'bot' && index === messages?.length - 1) ? (
+                                    {message.sender === 'bot' ? (
                                         <>
-
-                                            {botIsTyping && (
-
+                                            {index === messages.length - 1 && botIsTyping ? (
                                                 <div style={{ textAlign: 'center', marginTop: '10px' }}>
-
                                                     <Lottie
                                                         options={{
                                                             loop: true,
@@ -320,15 +311,9 @@ const ChatBot = () => {
                                                         width={100}
                                                     />
                                                 </div>
+                                            ) : (
+                                                message.content
                                             )}
-
-                                            {/* {!loadingBotResponse && (
-                                                <TypeAnimation
-                                                    sequence={[message.content]}
-                                                    speed={parseInt(styles.typingSpeed)}
-                                                    cursor={false}
-                                                />
-                                            )} */}
                                         </>
                                     ) : (
                                         message.content
@@ -336,6 +321,7 @@ const ChatBot = () => {
                                 </div>
                             </div>
                         ))}
+
                     </div>
 
                     <div

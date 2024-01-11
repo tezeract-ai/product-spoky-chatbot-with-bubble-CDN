@@ -102,7 +102,7 @@ const ChatBot = () => {
 
         const formdata = new FormData();
         formdata.append("query", userMessage);
-        formdata.append("chatbot_id", "65940b045daf358558a2258a");
+        formdata.append("chatbot_id", id);
         formdata.append("verticals", role);
         formdata.append("user_id", 'shahzain');
         formdata.append("user_chatid", 'Qudsia');
@@ -121,8 +121,9 @@ const ChatBot = () => {
 
             setTimeout(() => {
                 console.log("try");
-                setBotIsTyping(false);
             }, 5000)
+            setBotIsTyping(false);
+
             return result;
 
         } catch (error) {

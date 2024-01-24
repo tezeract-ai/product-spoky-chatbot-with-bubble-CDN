@@ -51,6 +51,8 @@ const ChatBot = () => {
 
     const [errorFetchingStyles, setErrorFetchingStyles] = useState(false);
     const [notFoundError, setNotFoundError] = useState(false);
+    const [waitingForResponse, setWaitingForResponse] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const messagesContainerRef = useRef(null);
     useEffect(() => {
@@ -172,36 +174,41 @@ const ChatBot = () => {
         if (userInput.trim() !== "") {
             setUserInput("");
 
+            if (waitingForResponse) {
+                // Display an error message to the user.
+                setErrorMessage("Please wait for the previous response before asking a new question.");
+
+                // Clear the error message after 5 seconds.
+                setTimeout(() => {
+                    setErrorMessage("");
+                }, 5000);
+
+                return;
+            }
+
             const userMessage = userInput;
 
             addMessage(userMessage, "user");
-            // setLoadingBotResponse(true);
+            setWaitingForResponse(true); // Set the flag to indicate that the bot is waiting for a response.
 
             try {
                 const apiResponse = await sendMessageToAPI(userMessage);
-                console.log("apiresponse");
-                const botResponse =
-                    apiResponse.Message || "Sorry, something went wrong.";
+                const botResponse = apiResponse.Message || "Sorry, something went wrong.";
                 const Message = apiResponse?.Message;
 
                 setMessages((prevMessages) => [
                     ...prevMessages,
                     { content: Message, sender: "bot" },
                 ]);
-                // addMessage(botResponse, 'bot');
             } catch (error) {
-                console.error("Error sending message to API:", error);
-                console.log("API Error Response:", error.response);
-                setTimeout(() => {
-                    console.log("catch");
-                    setBotIsTyping(false);
-                }, 5000);
-                throw error;
+                // Handle errors
             } finally {
-                // setLoadingBotResponse(false);
+                setWaitingForResponse(false); // Reset the flag after receiving the bot response.
             }
         }
     };
+
+
     //   console.log(messages, "setMessages");
     const handleClick = () => {
         console.log("rotate");
@@ -308,7 +315,7 @@ const ChatBot = () => {
                         </div>
                         <div
                             className="reset-button"
-                            style={{ backgroundColor: "transparent"}}
+                            style={{ backgroundColor: "transparent" }}
                         >
                             <Button
                                 disableElevation
@@ -374,7 +381,7 @@ const ChatBot = () => {
                                             height: "50px",
                                             marginRight: "10px",
                                             borderRadius: "50%",
-                                            
+
                                         }}
                                     />
                                 )}
@@ -446,9 +453,10 @@ const ChatBot = () => {
                             padding: "10px",
                         }}
                     >
+
                         <input
                             type="text"
-                            placeholder="Type your message..."
+                            placeholder="Ask me Anything..."
                             style={{
                                 flex: 1,
                                 padding: "10px",
@@ -483,8 +491,16 @@ const ChatBot = () => {
                                 style={{ marginRight: "5px" }}
                             />
                         </button>
-                    </div>
 
+
+                    </div>
+                    <div>
+                        {errorMessage && (
+                            <div style={{ color: "red", marginTop: "10px",fontSize:'1rem' }}>
+                                {errorMessage}
+                            </div>
+                        )}
+                    </div>
                     <div
                         style={{
                             display: "flex",

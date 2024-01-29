@@ -4,6 +4,7 @@ import { TypeAnimation } from "react-type-animation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import animationData from "../src/assets/Animination.json";
+import Lottie from "react-lottie";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import {
     Container,
@@ -155,8 +156,9 @@ const ChatBot = () => {
             console.error("Error sending message to API:", error);
             setTimeout(() => {
                 console.log("catch");
-                setBotIsTyping(false);
+
             }, 5000);
+            setBotIsTyping(false);
             throw error;
         }
     };
@@ -228,6 +230,14 @@ const ChatBot = () => {
         });
     };
     console.log(chatUniqueId);
+    const defaultOptions = {
+        loop: true,
+        autoplay: true,
+        animationData: animationData,
+        rendererSettings: {
+            preserveAspectRatio: "xMidYMid slice"
+        }
+    };
     return (
         <div>
             {loading ? (
@@ -439,7 +449,7 @@ const ChatBot = () => {
                                         textAlign: "left",
                                     }}
                                 >
-                                    <Typography>Loading...</Typography>
+                                    <Lottie options={defaultOptions} width={50} />
                                 </div>
                             </div>
                         )}
@@ -496,7 +506,7 @@ const ChatBot = () => {
                     </div>
                     <div>
                         {errorMessage && (
-                            <div style={{ color: "red", marginTop: "10px",fontSize:'1rem' }}>
+                            <div style={{ color: "red", marginTop: "10px", fontSize: '1rem' }}>
                                 {errorMessage}
                             </div>
                         )}

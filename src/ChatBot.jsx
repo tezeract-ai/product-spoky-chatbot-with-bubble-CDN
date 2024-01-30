@@ -64,7 +64,7 @@ const ChatBot = () => {
         const fetchData = async () => {
             try {
                 const response = await fetch(
-                    `http://162.244.82.128:4003/chatbots/get-single-chatbot/${id}`
+                    `http://162.244.82.128:4003/chatbots/get-single-chatbot/65afbe5b5fdf740cae1a063e`
                 );
                 const data = await response.json();
 

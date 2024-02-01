@@ -20,9 +20,11 @@ const ChatBot = () => {
   const { id } = useParams();
   // Accessing the data attribute from the script tag
   const scriptTag = document.querySelector("script[data-app-id]");
-  const chatbotId = scriptTag ? scriptTag.dataset.appId : null;
+  //   const chatbotId = scriptTag ? scriptTag.dataset.appId : null;
+  const chatbotId = "65aa5f9825b33649172cbfaf";
   // const appId="11111"
   const [loading, setLoading] = useState(true);
+  const [showChatbot, setShowChatbot] = useState(false);
   const [chatbotname, setChatbotName] = useState("");
   const [styles, setStyles] = useState({
     bgColor: "",
@@ -242,8 +244,22 @@ const ChatBot = () => {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
+  const handleShowChatbot = () => {
+    console.log("clicked");
+    setShowChatbot(() => !showChatbot);
+  };
   return (
-    <div>
+    <div className="App">
+      <button
+        onClick={() => setShowChatbot(false)}
+        style={{
+          display: showChatbot ? "block" : "none",
+          marginBottom: "10px",
+          capitalize: "none",
+        }}
+      >
+        <Typography>Hide</Typography>
+      </button>
       {loading ? (
         <div
           style={{
@@ -275,119 +291,168 @@ const ChatBot = () => {
           </p>
         </div>
       ) : (
-        <div
-          style={{
-            backgroundColor: styles.bgColor,
-            fontSize: styles.fontSize,
-            fontFamily: styles.fontStyle,
-            color: styles.fontColor,
-            width: "1200px",
-            height: "820px",
-            boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-            borderRadius: "8px",
-            overflow: "hidden",
-            marginTop: "2rem",
-          }}
-        >
-          <h5>Chatbot Id : {chatbotId}</h5>
+        showChatbot && (
           <div
+            className="chatbot-container"
             style={{
-              background: `linear-gradient(to right, ${styles.headerGradientOne}, ${styles.headerGradientTwo})`,
-              padding: "10px",
-              textAlign: "center",
-              height: "50px",
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              backgroundColor: styles.bgColor,
+              fontSize: styles.fontSize,
+              fontFamily: styles.fontStyle,
+              color: styles.fontColor,
+              width: "500px",
+              height: "600px",
+              boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+              borderRadius: "8px",
+              overflow: "hidden",
+              // marginTop: "2rem",
             }}
           >
-            {styles.icon && (
-              <img
-                src={styles.icon}
-                alt="Chatbot Icon"
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  marginRight: "10px",
-                  borderRadius: "50%",
-                }}
-              />
-            )}
-
+            <h5>Chatbot Id : {chatbotId}</h5>
             <div
               style={{
-                fontSize: "24px",
-                padding: "5px 0",
-                color: "white",
+                background: `linear-gradient(to right, ${styles.headerGradientOne}, ${styles.headerGradientTwo})`,
+                padding: "10px",
                 textAlign: "center",
+                height: "50px",
+                width: "100%",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              {chatbotname}
-            </div>
-            <div
-              className="reset-button"
-              style={{ backgroundColor: "transparent" }}
-            >
-              <Button
-                disableElevation
-                disableTouchRipple
-                onClick={handleClick}
-                sx={{
-                  color: "#FFFFFF",
-                  ml: 3,
-                  cursor: "pointer",
-                  transition: "transform 0.5s ease",
-                  "&.rotate": {
-                    transform: "rotate(180deg)",
-                  },
-                  "&:hover": {
-                    backgroundColor: "transparent",
-                  },
-                  "&:focus": {
-                    backgroundColor: "transparent",
-                    border: 0,
-                    outline: 0,
-                  },
-                }}
-                className={rotate ? "rotate" : ""}
-              >
-                <RestartAltIcon onClick={() => handleGenerateUUID()} />
-              </Button>
-            </div>
-          </div>
+              {styles.icon && (
+                <img
+                  src={styles.icon}
+                  alt="Chatbot Icon"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    marginRight: "10px",
+                    borderRadius: "50%",
+                  }}
+                />
+              )}
 
-          <div
-            style={{
-              height: "500px",
-              overflowY: "auto",
-              padding: "15px",
-              borderBottom: `1px solid ${styles.userChatBubbleColor}`,
-              backgroundColor: `${styles.bgColor}`,
-              borderRadius: "24px",
-              width: "98%",
-              position: "relative",
-              WebkitOverflowScrolling: "touch",
-              scrollbarWidth: "thin",
-              scrollbarColor: "red transparent",
-            }}
-            ref={messagesContainerRef}
-          >
-            {messages.map((message, index) => (
               <div
-                key={index}
                 style={{
+                  fontSize: "24px",
+                  padding: "5px 0",
+                  color: "white",
+                  textAlign: "center",
                   display: "flex",
-                  flexDirection:
-                    message.sender === "user" ? "row-reverse" : "row",
-                  alignItems: "flex-start",
-                  marginBottom: "10px",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                {message.sender === "bot" && styles.icon && (
+                {chatbotname}
+              </div>
+              <div
+                className="reset-button"
+                style={{ backgroundColor: "transparent" }}
+              >
+                <Button
+                  disableElevation
+                  disableTouchRipple
+                  onClick={handleClick}
+                  sx={{
+                    color: "#FFFFFF",
+                    ml: 3,
+                    cursor: "pointer",
+                    transition: "transform 0.5s ease",
+                    "&.rotate": {
+                      transform: "rotate(180deg)",
+                    },
+                    "&:hover": {
+                      backgroundColor: "transparent",
+                    },
+                    "&:focus": {
+                      backgroundColor: "transparent",
+                      border: 0,
+                      outline: 0,
+                    },
+                  }}
+                  className={rotate ? "rotate" : ""}
+                >
+                  <RestartAltIcon onClick={() => handleGenerateUUID()} />
+                </Button>
+              </div>
+            </div>
+
+            <div
+              style={{
+                height: "300px",
+                overflowY: "auto",
+                padding: "15px",
+                borderBottom: `1px solid ${styles.userChatBubbleColor}`,
+                backgroundColor: `${styles.bgColor}`,
+                borderRadius: "24px",
+                width: "98%",
+                position: "relative",
+                WebkitOverflowScrolling: "touch",
+                scrollbarWidth: "thin",
+                scrollbarColor: "red transparent",
+              }}
+              ref={messagesContainerRef}
+            >
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: "flex",
+                    flexDirection:
+                      message.sender === "user" ? "row-reverse" : "row",
+                    alignItems: "flex-start",
+                    marginBottom: "10px",
+                  }}
+                >
+                  {message.sender === "bot" && styles.icon && (
+                    <img
+                      src={styles.icon}
+                      alt="Bot Icon"
+                      style={{
+                        width: "50px",
+                        height: "50px",
+                        marginRight: "10px",
+                        borderRadius: "50%",
+                      }}
+                    />
+                  )}
+                  <div
+                    style={{
+                      background:
+                        message.sender === "user"
+                          ? styles.userChatBubbleColor
+                          : styles.chatBubbleColor,
+                      color: styles.fontColor,
+                      padding: "10px",
+                      borderRadius: "8px",
+                      maxWidth: "70%",
+                      textAlign: "left",
+                    }}
+                  >
+                    {message.sender === "bot" ? (
+                      <>
+                        {index === messages.length - 1 && botIsTyping ? (
+                          <div
+                            style={{ textAlign: "center", marginTop: "10px" }}
+                          >
+                            <Typography>Loading...</Typography>
+                          </div>
+                        ) : (
+                          message.content
+                        )}
+                      </>
+                    ) : (
+                      message.content
+                    )}
+                  </div>
+                </div>
+              ))}
+              {botIsTyping && (
+                <div
+                  className="icon-with-loading-text"
+                  style={{ display: "flex" }}
+                >
                   <img
                     src={styles.icon}
                     alt="Bot Icon"
@@ -398,157 +463,118 @@ const ChatBot = () => {
                       borderRadius: "50%",
                     }}
                   />
-                )}
-                <div
-                  style={{
-                    background:
-                      message.sender === "user"
-                        ? styles.userChatBubbleColor
-                        : styles.chatBubbleColor,
-                    color: styles.fontColor,
-                    padding: "10px",
-                    borderRadius: "8px",
-                    maxWidth: "70%",
-                    textAlign: "left",
-                  }}
-                >
-                  {message.sender === "bot" ? (
-                    <>
-                      {index === messages.length - 1 && botIsTyping ? (
-                        <div style={{ textAlign: "center", marginTop: "10px" }}>
-                          <Typography>Loading...</Typography>
-                        </div>
-                      ) : (
-                        message.content
-                      )}
-                    </>
-                  ) : (
-                    message.content
-                  )}
+                  <div
+                    style={{
+                      background: styles.chatBubbleColor,
+                      color: "#333",
+                      padding: "10px",
+                      borderRadius: "8px",
+                      maxWidth: "20%",
+                      textAlign: "left",
+                    }}
+                  >
+                    <Lottie options={defaultOptions} width={50} />
+                  </div>
                 </div>
-              </div>
-            ))}
-            {botIsTyping && (
-              <div
-                className="icon-with-loading-text"
-                style={{ display: "flex" }}
-              >
-                <img
-                  src={styles.icon}
-                  alt="Bot Icon"
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    marginRight: "10px",
-                    borderRadius: "50%",
-                  }}
-                />
-                <div
-                  style={{
-                    background: styles.chatBubbleColor,
-                    color: "#333",
-                    padding: "10px",
-                    borderRadius: "8px",
-                    maxWidth: "20%",
-                    textAlign: "left",
-                  }}
-                >
-                  <Lottie options={defaultOptions} width={50} />
-                </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "10px",
-            }}
-          >
-            <input
-              type="text"
-              placeholder="Ask me Anything..."
-              style={{
-                flex: 1,
-                padding: "10px",
-                borderRadius: "5px",
-                border: "1px solid #ddd",
-                outline: "none",
-                backgroundColor: "white",
-                color: "black",
-                marginRight: "10px",
-              }}
-              value={userInput}
-              onChange={handleUserInput}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSendMessage();
-                }
-              }}
-            />
-            <button
-              style={{
-                color: styles.sendButtonColor,
-                padding: "8px 15px",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-                background: `linear-gradient(to right, ${styles.headerGradientOne}, ${styles.headerGradientTwo})`,
-              }}
-              onClick={handleSendMessage}
-            >
-              <FontAwesomeIcon
-                icon={faPaperPlane}
-                style={{ marginRight: "5px" }}
-              />
-            </button>
-          </div>
-          <div>
-            {errorMessage && (
-              <div
-                style={{ color: "red", marginTop: "10px", fontSize: "1rem" }}
-              >
-                {errorMessage}
-              </div>
-            )}
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-              borderTop: `1px solid ${styles.userChatBubbleColor}`,
-              padding: "10px",
-              height: "auto",
-              width: "100%",
-            }}
-          >
-            <div style={{ fontSize: "18px" }}>{styles.tagline}</div>
-          </div>
-
-          <div
-            style={{
-              background: `linear-gradient(to right, ${styles.headerGradientOne}, ${styles.headerGradientTwo})`,
-              padding: "10px",
-              textAlign: "center",
-              borderTop: `1px solid ${styles.userChatBubbleColor}`,
-              height: "50px",
-              width: "100%",
-              marginTop: "2.7rem",
-            }}
-          >
             <div
               style={{
-                fontSize: "24px",
-                background: `linear-gradient(to right, ${styles.headerGradientOne}, 
-                             ${styles.headerGradientTwo})`,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "10px",
               }}
-            ></div>
+            >
+              <input
+                type="text"
+                placeholder="Ask me Anything..."
+                style={{
+                  flex: 1,
+                  padding: "10px",
+                  borderRadius: "5px",
+                  border: "1px solid #ddd",
+                  outline: "none",
+                  backgroundColor: "white",
+                  color: "black",
+                  marginRight: "10px",
+                }}
+                value={userInput}
+                onChange={handleUserInput}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSendMessage();
+                  }
+                }}
+              />
+              <button
+                style={{
+                  color: styles.sendButtonColor,
+                  padding: "8px 15px",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  background: `linear-gradient(to right, ${styles.headerGradientOne}, ${styles.headerGradientTwo})`,
+                }}
+                onClick={handleSendMessage}
+              >
+                <FontAwesomeIcon
+                  icon={faPaperPlane}
+                  style={{ marginRight: "5px" }}
+                />
+              </button>
+            </div>
+            <div>
+              {errorMessage && (
+                <div
+                  style={{ color: "red", marginTop: "10px", fontSize: "1rem" }}
+                >
+                  {errorMessage}
+                </div>
+              )}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                textAlign: "center",
+                borderTop: `1px solid ${styles.userChatBubbleColor}`,
+                padding: "10px",
+                height: "auto",
+                width: "100%",
+              }}
+            >
+              <div style={{ fontSize: "18px" }}>{styles.tagline}</div>
+            </div>
+
+            <div
+              style={{
+                background: `linear-gradient(to right, ${styles.headerGradientOne}, ${styles.headerGradientTwo})`,
+                padding: "10px",
+                textAlign: "center",
+                borderTop: `1px solid ${styles.userChatBubbleColor}`,
+                height: "50px",
+                width: "100%",
+                marginTop: "2.7rem",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "24px",
+                  background: `linear-gradient(to right, ${styles.headerGradientOne}, 
+                             ${styles.headerGradientTwo})`,
+                }}
+              ></div>
+            </div>
           </div>
-        </div>
+        )
+      )}
+      {!showChatbot && (
+        <button onClick={handleShowChatbot} style={{ marginTop: "10px" }}>
+          Chat
+        </button>
       )}
     </div>
   );

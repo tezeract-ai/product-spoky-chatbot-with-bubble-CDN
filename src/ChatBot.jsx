@@ -20,8 +20,8 @@ const ChatBot = () => {
   const { id } = useParams();
   // Accessing the data attribute from the script tag
   const scriptTag = document.querySelector("script[data-app-id]");
-  //   const chatbotId = scriptTag ? scriptTag.dataset.appId : null;
-  const chatbotId = "65aa5f9825b33649172cbfaf";
+    const chatbotId = scriptTag ? scriptTag.dataset.appId : null;
+//   const chatbotId = "65aa5f9825b33649172cbfaf";
   // const appId="11111"
   const [loading, setLoading] = useState(true);
   const [showChatbot, setShowChatbot] = useState(false);

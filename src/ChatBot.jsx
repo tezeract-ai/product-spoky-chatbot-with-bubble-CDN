@@ -6,6 +6,7 @@ import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import animationData from "../src/assets/Animination.json";
 import Lottie from "react-lottie";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
   Container,
   Paper,
@@ -19,9 +20,10 @@ import {
 const ChatBot = () => {
   const { id } = useParams();
   // Accessing the data attribute from the script tag
-  const scriptTag = document.querySelector("script[data-app-id]");
-    const chatbotId = scriptTag ? scriptTag.dataset.appId : null;
-//   const chatbotId = "65aa5f9825b33649172cbfaf";
+  const scriptTag = document.querySelector("script[data-agent-id]");
+  const chatbotId = scriptTag ? scriptTag.dataset.agentId : null;
+  console.log(scriptTag?.dataset);
+  //   const chatbotId = "65aa5f9825b33649172cbfaf";
   // const appId="11111"
   const [loading, setLoading] = useState(true);
   const [showChatbot, setShowChatbot] = useState(false);
@@ -249,17 +251,42 @@ const ChatBot = () => {
     setShowChatbot(() => !showChatbot);
   };
   return (
-    <div className="App">
-      <button
+    <div>
+      <Button
         onClick={() => setShowChatbot(false)}
-        style={{
-          display: showChatbot ? "block" : "none",
+        sx={{
+          display: showChatbot ? "flex" : "none",
           marginBottom: "10px",
           capitalize: "none",
+          width: "65px",
+          height: "65px",
+          backgroundColor: "#FF8C7D",
+          borderRadius: "50%",
+          justifyContent: "center",
+          alignItems: "center",
+          "&:focus": {
+            outline: "none",
+          },
+          "&:hover": {
+            backgroundColor: "#FF8C7D",
+          },
         }}
       >
-        <Typography>Hide</Typography>
-      </button>
+        <div
+          className="show-chatbot-icon"
+          style={{
+            width: "100%",
+            height: "100%",
+            padding: 0,
+            backgroundColor: "transparent",
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+          }}
+        >
+          <KeyboardArrowDownIcon sx={{ fontSize: "5rem", color: "#62D2E9" }} />
+        </div>{" "}
+      </Button>
       {loading ? (
         <div
           style={{
@@ -572,9 +599,30 @@ const ChatBot = () => {
         )
       )}
       {!showChatbot && (
-        <button onClick={handleShowChatbot} style={{ marginTop: "10px" }}>
-          Chat
-        </button>
+        <Button
+          onClick={handleShowChatbot}
+          sx={{
+            marginTop: "10px",
+            width: "75px",
+            height: "75px",
+            padding: 0,
+            borderRadius: "50%",
+            backgroundColor: "white",
+            "&:focus": { outline: "none" },
+          }}
+        >
+          <div
+            className="show-chatbot-icon"
+            style={{
+              width: "100%",
+              height: "100%",
+              padding: 0,
+              backgroundColor: "white",
+            }}
+          >
+            <img src={styles.icon} width="100%" height="100%" />
+          </div>
+        </Button>
       )}
     </div>
   );

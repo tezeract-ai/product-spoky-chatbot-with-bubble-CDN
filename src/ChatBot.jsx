@@ -131,9 +131,9 @@ const ChatBot = () => {
 
     const formdata = new FormData();
     formdata.append("query", userMessage);
-    formdata.append("chatbot_id", id);
+    formdata.append("chatbot_id", chatbotId);
     formdata.append("verticals", role);
-    formdata.append("user_id", "shahzain");
+    formdata.append("user_id", user_id);
     formdata.append("user_chatid", chatUniqueId);
 
     try {

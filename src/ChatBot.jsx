@@ -20,8 +20,8 @@ const ChatBot = () => {
   const { id } = useParams();
   // Accessing the data attribute from the script tag
   const scriptTag = document.querySelector("script[data-app-id]");
-  const appId = scriptTag ? scriptTag.dataset.appId : null;
-// const appId="11111"
+  const chatbotId = scriptTag ? scriptTag.dataset.appId : null;
+  // const appId="11111"
   const [loading, setLoading] = useState(true);
   const [chatbotname, setChatbotName] = useState("");
   const [styles, setStyles] = useState({
@@ -67,7 +67,7 @@ const ChatBot = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://162.244.82.128:4003/chatbots/get-single-chatbot/65afbe5b5fdf740cae1a063e`
+          `http://162.244.82.128:4003/chatbots/get-single-chatbot/${chatbotId}`
         );
         const data = await response.json();
 
@@ -289,7 +289,7 @@ const ChatBot = () => {
             marginTop: "2rem",
           }}
         >
-          <h5>Chatbot Id : {appId}</h5>
+          <h5>Chatbot Id : {chatbotId}</h5>
           <div
             style={{
               background: `linear-gradient(to right, ${styles.headerGradientOne}, ${styles.headerGradientTwo})`,

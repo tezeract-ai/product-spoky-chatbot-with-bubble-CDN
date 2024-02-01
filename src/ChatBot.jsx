@@ -251,7 +251,13 @@ const ChatBot = () => {
     setShowChatbot(() => !showChatbot);
   };
   return (
-    <div>
+    <div
+      style={{
+        position: "fixed",
+        bottom: "10px" /* Adjust the distance from the bottom as needed */,
+        right: "10px",
+      }}
+    >
       <Button
         onClick={() => setShowChatbot(false)}
         sx={{

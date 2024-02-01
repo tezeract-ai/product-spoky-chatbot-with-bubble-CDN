@@ -3,9 +3,9 @@
   /* margin: 0 auto; */
   /* padding: 2rem; */
   text-align: center;
-  position: fixed;
-  bottom: 10px; /* Adjust the distance from the bottom as needed */
-  right: 10px;
+  /* position: fixed; */
+  /* bottom: 10px; Adjust the distance from the bottom as needed */
+  /* right: 10px; */
 }
 
 .logo {

@@ -24,9 +24,9 @@ const ChatBot = () => {
   const { id } = useParams();
   // Accessing the data attribute from the script tag
   const scriptTag = document.querySelector("script[data-agent-id]");
-  // const chatbotId = scriptTag ? scriptTag.dataset.agentId : null;
-  const chatbotId =
-    "U2FsdGVkX1/x0YVNlUclH4YjPt10Khwvn+V3/eYD0iGEOB//23GVuQ6O9JEBsUWH";
+  const chatbotId = scriptTag ? scriptTag.dataset.agentId : null;
+  // const chatbotId =
+  //   "U2FsdGVkX1/x0YVNlUclH4YjPt10Khwvn+V3/eYD0iGEOB//23GVuQ6O9JEBsUWH";
 
   console.log(scriptTag?.dataset);
   // const encryptId = (id) => {

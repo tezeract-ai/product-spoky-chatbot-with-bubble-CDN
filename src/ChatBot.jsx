@@ -17,17 +17,48 @@ import {
   Typography,
   Button,
 } from "@mui/material";
+import CryptoJS from "crypto-js";
+const SECRET_PASS = import.meta.env.VITE_ENCRYPTION_SECRET || "";
+
 const ChatBot = () => {
   const { id } = useParams();
   // Accessing the data attribute from the script tag
   const scriptTag = document.querySelector("script[data-agent-id]");
-  const chatbotId = scriptTag ? scriptTag.dataset.agentId : null;
+  // const chatbotId = scriptTag ? scriptTag.dataset.agentId : null;
+  const chatbotId =
+    "U2FsdGVkX1/x0YVNlUclH4YjPt10Khwvn+V3/eYD0iGEOB//23GVuQ6O9JEBsUWH";
+
   console.log(scriptTag?.dataset);
+  // const encryptId = (id) => {
+  //   console.log(id, "data");
+  //   const cipherId = CryptoJS.AES.encrypt(
+  //     JSON.stringify(id),
+  //     SECRET_PASS
+  //   ).toString();
+  //   console.log(cipherId, "cipherText");
+  //   const encodedValue = encodeURIComponent(cipherId);
+  //   console.log("enco/ded value: ", encodedValue);
+  //   return cipherId;
+  // };
+  // const randomId =
+  //   "U2FsdGVkX183kb3kNnqEoUGV/o6QUpmQxtO3U8TKicPPDV85GBIN+kZFRBNG9+2C";
+
+  // const idToBeEncrypted = encryptId(chatbotId);
+  // console.log(idToBeEncrypted, "idToBeEncrypted");
+
+  const decryptId = (id) => {
+    console.log(id);
+    const bytes = CryptoJS.AES.decrypt(id, SECRET_PASS);
+    const decryptedId = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    return decryptedId;
+  };
+  // const idToBeDecrypted = decryptId(idToBeEncrypted);
+  // console.log("idToBeDecrypted: ", idToBeDecrypted);
   //   const chatbotId = "65aa5f9825b33649172cbfaf";
   // const appId="11111"
   const [loading, setLoading] = useState(true);
   const [showChatbot, setShowChatbot] = useState(false);
-  const [chatbotname, setChatbotName] = useState("");
+  const [chatbotName, setChatbotName] = useState("");
   const [styles, setStyles] = useState({
     bgColor: "",
     chatBubbleColor: "",
@@ -71,7 +102,9 @@ const ChatBot = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://162.244.82.128:4003/chatbots/get-single-chatbot/${chatbotId}`
+          `http://162.244.82.128:4003/chatbots/get-single-chatbot/${decryptId(
+            chatbotId
+          )}`
         );
         const data = await response.json();
 
@@ -133,21 +166,22 @@ const ChatBot = () => {
     console.log("true");
     setBotIsTyping(true);
 
-    const formdata = new FormData();
-    formdata.append("query", userMessage);
-    formdata.append("chatbot_id", chatbotId);
-    formdata.append("verticals", role);
-    formdata.append("user_id", user_id);
-    formdata.append("user_chatid", chatUniqueId);
+    const formData = new formData();
+    formData.append("query", userMessage);
+    formData.append("chatbot_id", chatbotId);
+    formData.append("verticals", role);
+    formData.append("user_id", user_id);
+    formData.append("user_chatid", chatUniqueId);
 
     try {
       const response = await fetch("http://162.244.82.128:8005/chat", {
         method: "POST",
         headers: {
+          // authorization: import.meta.env.API_AUTHORIZATION_TOKEN,
           authorization:
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoic2hhaHphaW4ifQ.XDPGU3IGuye85yaoptxIgd3PvjLQ2bGK0WSTto8VO7Y",
         },
-        body: formdata,
+        body: formData,
         redirect: "follow",
       });
 
@@ -256,6 +290,8 @@ const ChatBot = () => {
         position: "fixed",
         bottom: "10px" /* Adjust the distance from the bottom as needed */,
         right: "10px",
+        zIndex: 9999,
+        // backgroundColor:"red"
       }}
     >
       <Button
@@ -337,10 +373,11 @@ const ChatBot = () => {
               boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
               borderRadius: "8px",
               overflow: "hidden",
+              
               // marginTop: "2rem",
             }}
           >
-            <h5>Chatbot Id : {chatbotId}</h5>
+            {/* <h5>Chatbot Id : {chatbotId}</h5> */}
             <div
               style={{
                 background: `linear-gradient(to right, ${styles.headerGradientOne}, ${styles.headerGradientTwo})`,
@@ -377,7 +414,7 @@ const ChatBot = () => {
                   justifyContent: "center",
                 }}
               >
-                {chatbotname}
+                {chatbotName}
               </div>
               <div
                 className="reset-button"

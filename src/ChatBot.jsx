@@ -26,7 +26,7 @@ const ChatBot = () => {
   const scriptTag = document.querySelector("script[data-agent-id]");
   const chatbotId = scriptTag ? scriptTag.dataset.agentId : null;
   // const chatbotId =
-  //   "U2FsdGVkX1/x0YVNlUclH4YjPt10Khwvn+V3/eYD0iGEOB//23GVuQ6O9JEBsUWH";
+  //   "U2FsdGVkX1897FCcb1bhTMnBRYWBtPp7B0ou2oL/n2gfqVKd60ZUPaXUbYjtSNIv";
 
   console.log(scriptTag?.dataset);
   // const encryptId = (id) => {
@@ -153,7 +153,7 @@ const ChatBot = () => {
     };
 
     fetchData();
-  }, [id]);
+  }, []);
 
   useEffect(() => {
     if (messagesContainerRef.current) {
@@ -166,13 +166,15 @@ const ChatBot = () => {
     console.log("true");
     setBotIsTyping(true);
 
-    const formData = new formData();
+    // console.log("API try-------------====");
+    const formData = new FormData();
     formData.append("query", userMessage);
-    formData.append("chatbot_id", chatbotId);
+    formData.append("chatbot_id", decryptId(chatbotId));
     formData.append("verticals", role);
     formData.append("user_id", user_id);
     formData.append("user_chatid", chatUniqueId);
 
+    // console.log("API try-------------====");
     try {
       const response = await fetch("http://162.244.82.128:8005/chat", {
         method: "POST",
@@ -186,6 +188,7 @@ const ChatBot = () => {
       });
 
       const result = await response.json();
+      console.log(result);
 
       setTimeout(() => {
         console.log("try");
@@ -194,10 +197,9 @@ const ChatBot = () => {
 
       return result;
     } catch (error) {
+      console.log("catch");
       console.error("Error sending message to API:", error);
-      setTimeout(() => {
-        console.log("catch");
-      }, 5000);
+      setTimeout(() => {}, 5000);
       setBotIsTyping(false);
       throw error;
     }
@@ -213,6 +215,7 @@ const ChatBot = () => {
   };
 
   const handleSendMessage = async () => {
+    // console.log("send message", userInput);
     if (userInput.trim() !== "") {
       setUserInput("");
 
@@ -236,6 +239,7 @@ const ChatBot = () => {
       setWaitingForResponse(true); // Set the flag to indicate that the bot is waiting for a response.
 
       try {
+        // console.log("try-----------------");
         const apiResponse = await sendMessageToAPI(userMessage);
         const botResponse =
           apiResponse.Message || "Sorry, something went wrong.";
@@ -373,7 +377,7 @@ const ChatBot = () => {
               boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
               borderRadius: "8px",
               overflow: "hidden",
-              
+
               // marginTop: "2rem",
             }}
           >

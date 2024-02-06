@@ -102,7 +102,7 @@ const ChatBot = () => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `http://162.244.82.128:4003/chatbots/get-single-chatbot/${decryptId(
+          `https://app.spoky.co/nest_backend/chatbots/get-single-chatbot/${decryptId(
             chatbotId
           )}`
         );
@@ -176,12 +176,10 @@ const ChatBot = () => {
 
     // console.log("API try-------------====");
     try {
-      const response = await fetch("http://162.244.82.128:8005/chat", {
+      const response = await fetch("https://app.spoky.co/ai_backend/chat", {
         method: "POST",
         headers: {
-          // authorization: import.meta.env.API_AUTHORIZATION_TOKEN,
-          authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoic2hhaHphaW4ifQ.XDPGU3IGuye85yaoptxIgd3PvjLQ2bGK0WSTto8VO7Y",
+          authorization: import.meta.env.VITE_CHAT_API_AUTHORIZATION_TOKEN,
         },
         body: formData,
         redirect: "follow",

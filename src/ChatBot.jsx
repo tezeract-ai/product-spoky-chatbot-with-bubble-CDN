@@ -18,33 +18,15 @@ import {
   Button,
 } from "@mui/material";
 import CryptoJS from "crypto-js";
-const SECRET_PASS = import.meta.env.VITE_ENCRYPTION_SECRET || "";
+// const SECRET_PASS = import.meta.env.VITE_ENCRYPTION_SECRET || "";
+const SECRET_PASS = "XkhZG4fW2t2Z";
 
 const ChatBot = () => {
-  const { id } = useParams();
   // Accessing the data attribute from the script tag
   const scriptTag = document.querySelector("script[data-agent-id]");
   const chatbotId = scriptTag ? scriptTag.dataset.agentId : null;
-  // const chatbotId =
-  //   "U2FsdGVkX1897FCcb1bhTMnBRYWBtPp7B0ou2oL/n2gfqVKd60ZUPaXUbYjtSNIv";
 
   console.log(scriptTag?.dataset);
-  // const encryptId = (id) => {
-  //   console.log(id, "data");
-  //   const cipherId = CryptoJS.AES.encrypt(
-  //     JSON.stringify(id),
-  //     SECRET_PASS
-  //   ).toString();
-  //   console.log(cipherId, "cipherText");
-  //   const encodedValue = encodeURIComponent(cipherId);
-  //   console.log("enco/ded value: ", encodedValue);
-  //   return cipherId;
-  // };
-  // const randomId =
-  //   "U2FsdGVkX183kb3kNnqEoUGV/o6QUpmQxtO3U8TKicPPDV85GBIN+kZFRBNG9+2C";
-
-  // const idToBeEncrypted = encryptId(chatbotId);
-  // console.log(idToBeEncrypted, "idToBeEncrypted");
 
   const decryptId = (id) => {
     console.log(id);
@@ -52,10 +34,7 @@ const ChatBot = () => {
     const decryptedId = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
     return decryptedId;
   };
-  // const idToBeDecrypted = decryptId(idToBeEncrypted);
-  // console.log("idToBeDecrypted: ", idToBeDecrypted);
-  //   const chatbotId = "65aa5f9825b33649172cbfaf";
-  // const appId="11111"
+
   const [loading, setLoading] = useState(true);
   const [showChatbot, setShowChatbot] = useState(false);
   const [chatbotName, setChatbotName] = useState("");
@@ -75,12 +54,7 @@ const ChatBot = () => {
   });
   const [botIsTyping, setBotIsTyping] = useState(false);
 
-  const [messages, setMessages] = useState([
-    {
-      content: "Hello, I am ChatBot! How can I help you today?",
-      sender: "bot",
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
 
   const [userInput, setUserInput] = useState("");
   const [user_id, setUserId] = useState("");
@@ -170,27 +144,29 @@ const ChatBot = () => {
     const formData = new FormData();
     formData.append("query", userMessage);
     formData.append("chatbot_id", decryptId(chatbotId));
-    formData.append("verticals", role);
+    formData.append("vertical", role);
     formData.append("user_id", user_id);
     formData.append("user_chatid", chatUniqueId);
 
     // console.log("API try-------------====");
     try {
-      const response = await fetch("https://app.spoky.co/ai_backend/chat", {
-        method: "POST",
-        headers: {
-          authorization: import.meta.env.VITE_CHAT_API_AUTHORIZATION_TOKEN,
-        },
-        body: formData,
-        redirect: "follow",
-      });
+      const response = await fetch(
+        "https://app.spoky.co/ai_backend_fetch/chat",
+        {
+          method: "POST",
+          headers: {
+            // authorization: import.meta.env.VITE_CHAT_API_AUTHORIZATION_TOKEN,
+            authorization:
+              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjVlNTgyNmQ3M2ZkODQ0YTQ1MmM1MDgwIiwiaWF0IjoxNzA5NTYyMDYxLCJleHAiOjE3MDk4MjEyNjF9.OviGc6ToZrFzjIJJZrOzDN6D_YiWgAzACMKe8wVS8Xc",
+          },
+          body: formData,
+          redirect: "follow",
+        }
+      );
 
       const result = await response.json();
       console.log(result);
 
-      setTimeout(() => {
-        console.log("try");
-      }, 5000);
       setBotIsTyping(false);
 
       return result;
@@ -211,7 +187,8 @@ const ChatBot = () => {
   const handleUserInput = (e) => {
     setUserInput(e.target.value);
   };
-
+  const errorMessageBot =
+    "Apologies, I'm currently unable to offer a response. Please attempt to regenerate it once more.";
   const handleSendMessage = async () => {
     // console.log("send message", userInput);
     if (userInput.trim() !== "") {
@@ -245,17 +222,30 @@ const ChatBot = () => {
 
         setMessages((prevMessages) => [
           ...prevMessages,
-          { content: Message, sender: "bot" },
+          {
+            content: apiResponse?.status === 200 ? Message : errorMessageBot,
+            sender: "bot",
+          },
         ]);
       } catch (error) {
+        console.log("catch error ++++++++++++");
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            content: errorMessageBot,
+            sender: "bot",
+          },
+        ]);
         // Handle errors
       } finally {
+        console.log("catch error ++++++++++++");
+
         setWaitingForResponse(false); // Reset the flag after receiving the bot response.
       }
     }
   };
 
-  //   console.log(messages, "setMessages");
+  console.log(messages, "setMessages");
   const handleClick = () => {
     console.log("rotate");
     setRotate(true);

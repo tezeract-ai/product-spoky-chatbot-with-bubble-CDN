@@ -1,23 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
-import { TypeAnimation } from "react-type-animation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import animationData from "../src/assets/Animination.json";
 import Lottie from "react-lottie";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import {
-  Container,
-  Paper,
-  TextField,
-  InputAdornment,
-  IconButton,
-  Box,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Typography, Button, Box } from "@mui/material";
 import CryptoJS from "crypto-js";
+import { AgentHeader } from "./components/agent-header/AgentHeader";
+import { Chats } from "./components/chats/Chats";
+import { AgentFooter } from "./components/agent-footer/AgentFooter";
+import {
+  atomAgentDetails,
+  atomAgentStyles,
+  atomChatUniqueId,
+  atomMessages,
+} from "./atom/atom";
+import { useAtom } from "jotai";
+import { generateUUID } from "./utils";
 // const SECRET_PASS = import.meta.env.VITE_ENCRYPTION_SECRET || "";
 const SECRET_PASS = "XkhZG4fW2t2Z";
 
@@ -38,29 +38,18 @@ const ChatBot = () => {
   const [loading, setLoading] = useState(true);
   const [showChatbot, setShowChatbot] = useState(false);
   const [chatbotName, setChatbotName] = useState("");
-  const [styles, setStyles] = useState({
-    bgColor: "",
-    chatBubbleColor: "",
-    fontColor: "",
-    fontSize: "",
-    fontStyle: "",
-    headerGradientOne: "",
-    headerGradientTwo: "",
-    icon: "",
-    sendButtonColor: "",
-    tagline: "",
-    typingSpeed: "",
-    userChatBubbleColor: "lightblue",
-  });
-  const [botIsTyping, setBotIsTyping] = useState(false);
-
-  const [messages, setMessages] = useState([]);
-
-  const [userInput, setUserInput] = useState("");
   const [user_id, setUserId] = useState("");
   const [role, setRole] = useState("");
+  const [agentDetails, setAgentDetails] = useAtom(atomAgentDetails);
+  const [agentStyles, setAgentStyles] = useAtom(atomAgentStyles);
+  const [botIsTyping, setBotIsTyping] = useState(false);
+
+  const [messages, setMessages] = useAtom(atomMessages);
+
+  const [userInput, setUserInput] = useState("");
+
   const [rotate, setRotate] = useState(false);
-  const [chatUniqueId, setChatUniqueId] = useState(null);
+  const [chatUniqueId, setChatUniqueId] = useAtom(atomChatUniqueId);
 
   const [errorFetchingStyles, setErrorFetchingStyles] = useState(false);
   const [notFoundError, setNotFoundError] = useState(false);
@@ -69,47 +58,39 @@ const ChatBot = () => {
 
   const messagesContainerRef = useRef(null);
   useEffect(() => {
-    const newUUID = Math.random().toString(36).substring(2, 15);
+    const newUUID = generateUUID();
     setChatUniqueId(() => newUUID);
   }, []);
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `https://app.spoky.co/nest_backend/chatbots/get-single-chatbot/${decryptId(
+          `http://162.244.82.128:4003/chatbots/get-single-chatbot/${decryptId(
             chatbotId
           )}`
         );
         const data = await response.json();
-
-        if (!response.ok) {
+        console.log(data);
+        if (!data.success) {
           throw new Error(data.message || "Error fetching styles");
         }
 
         const { chatbotStyles, chatbotDetails } = data?.data || {};
         const initialMessage = chatbotDetails?.initialMessage;
         console.log(chatbotDetails, "chatbotDetails");
-        const name = chatbotDetails?.name;
-        setChatbotName(name);
-        const chatbotRole = chatbotDetails?.role;
-        const { userId } = data?.data;
-        setUserId(userId);
-        setRole(chatbotRole);
-        setMessages([{ content: initialMessage, sender: "bot" }]);
+        const agentName = chatbotDetails?.name;
+        const agentRole = chatbotDetails?.role;
+        const userId = data?.data?.userId;
+        setAgentDetails({
+          agentName,
+          agentRole,
+          userId,
+          agentId: decryptId(chatbotId),
+        });
+        setMessages([{ text: initialMessage, isBot: true }]);
 
-        setStyles({
-          bgColor: chatbotStyles?.bgColor,
-          chatBubbleColor: chatbotStyles?.chatBubbleColor,
-          fontColor: chatbotStyles?.fontColor,
-          fontSize: chatbotStyles?.fontSize,
-          fontStyle: chatbotStyles?.fontStyle,
-          headerGradientOne: chatbotStyles?.headerGradientOne,
-          headerGradientTwo: chatbotStyles?.headerGradientTwo,
-          icon: chatbotStyles?.icon,
-          sendButtonColor: chatbotStyles?.sendButtonColor,
-          tagline: chatbotStyles?.tagline,
-          typingSpeed: chatbotStyles?.typingSpeed,
-          userChatBubbleColor: "lightblue",
+        setAgentStyles({
+          ...chatbotStyles,
         });
 
         setLoading(false);
@@ -216,8 +197,8 @@ const ChatBot = () => {
       try {
         // console.log("try-----------------");
         const apiResponse = await sendMessageToAPI(userMessage);
-        const botResponse =
-          apiResponse.Message || "Sorry, something went wrong.";
+
+        apiResponse.Message || "Sorry, something went wrong.";
         const Message = apiResponse?.Message;
 
         setMessages((prevMessages) => [
@@ -253,28 +234,10 @@ const ChatBot = () => {
       setRotate(false);
     }, 500); // Reset rotation after 500ms (same duration as transition in CSS)
   };
-  const handleGenerateUUID = async () => {
-    const newUUID = Math.random().toString(36).substring(2, 15);
-    console.log(newUUID);
-    setChatUniqueId(() => newUUID);
-    setMessages((prevMessages) => {
-      // Keep the first message and clear the rest
-      const firstMessage = prevMessages.length > 0 ? [prevMessages[0]] : [];
-      return firstMessage;
-    });
-  };
-  console.log(chatUniqueId);
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice",
-    },
-  };
   const handleShowChatbot = () => {
     console.log("clicked");
     setShowChatbot(() => !showChatbot);
+    console.log(agentDetails);
   };
   return (
     <div
@@ -286,7 +249,7 @@ const ChatBot = () => {
         // backgroundColor:"red"
       }}
     >
-      <Button
+      {/*<Button
         onClick={() => setShowChatbot(false)}
         sx={{
           display: showChatbot ? "flex" : "none",
@@ -320,7 +283,8 @@ const ChatBot = () => {
         >
           <KeyboardArrowDownIcon sx={{ fontSize: "5rem", color: "#62D2E9" }} />
         </div>{" "}
-      </Button>
+      </Button> */}
+
       {loading ? (
         <div
           style={{
@@ -353,7 +317,28 @@ const ChatBot = () => {
         </div>
       ) : (
         showChatbot && (
-          <div
+          <Box
+            className="customize-chatbot"
+            sx={{
+              width: { xs: "100%", sm: "400px" }, // "450px",
+              height: { xs: "60%", md: "600px" }, // "600px",
+              backgroundColor: agentStyles.bgColor,
+              borderRadius: "26px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              // backgroundColor: "#FF8C7D",
+            }}
+          >
+            <Box className="header-with-chats">
+              <AgentHeader handleShowAgent={handleShowChatbot} />
+              <Chats messages={messages} />
+            </Box>
+            <AgentFooter />
+          </Box>
+        )
+      )}
+      {/* <div
             className="chatbot-container"
             style={{
               backgroundColor: styles.bgColor,
@@ -369,7 +354,7 @@ const ChatBot = () => {
               // marginTop: "2rem",
             }}
           >
-            {/* <h5>Chatbot Id : {chatbotId}</h5> */}
+           <h5>Chatbot Id : {chatbotId}</h5>
             <div
               style={{
                 background: `linear-gradient(to right, ${styles.headerGradientOne}, ${styles.headerGradientTwo})`,
@@ -630,16 +615,15 @@ const ChatBot = () => {
                 }}
               ></div>
             </div>
-          </div>
-        )
-      )}
+          </div> */}
+
       {!showChatbot && (
         <Button
           onClick={handleShowChatbot}
           sx={{
             marginTop: "10px",
-            width: "60px",
-            height: "60px",
+            width: "80px",
+            height: "65px",
             padding: 0,
             borderRadius: "50%",
             backgroundColor: "white",
@@ -652,10 +636,12 @@ const ChatBot = () => {
               width: "100%",
               height: "100%",
               padding: 0,
-              backgroundColor: "white",
+              backgroundColor: "#ffffff",
+              border: "7px solid #62D2E9",
+              borderRadius: "50%",
             }}
           >
-            <img src={styles.icon} width="100%" height="100%" />
+            <img src={agentStyles.icon} width="100%" height="100%" />
           </div>
         </Button>
       )}

@@ -4,10 +4,11 @@ import { TypeAnimation } from "react-type-animation";
 import ChatAgentIcon from "../../assets/Images/chat-agent-icon.png";
 import { Loader } from "../loader/Loader";
 import { useAtom } from "jotai";
-import { atomAgentStyles } from "../../atom/atom";
-const isLoading = true;
+import { atomAgentStyles, atomIsLoading } from "../../atom/atom";
+import { getSpeed } from "../../utils";
 export const Chats = ({ messages }) => {
   const [agentStyles] = useAtom(atomAgentStyles);
+  const [isLoading] = useAtom(atomIsLoading);
   const chatBoxRef = useRef(null);
   const scrollToBottom = () => {
     if (chatBoxRef.current) {
@@ -15,15 +16,9 @@ export const Chats = ({ messages }) => {
     }
   };
   useEffect(() => {
-    // Scroll to the bottom when messages are updated
     scrollToBottom();
   }, [messages]);
-  const handleTrainBetterResponse = (index) => {
-    console.log(index);
-
-    console.log(messages[index]);
-    console.log(messages[index - 1]);
-  };
+  console.log(agentStyles);
   return (
     <Box
       className="messages-box"
@@ -85,8 +80,8 @@ export const Chats = ({ messages }) => {
                 <Typography
                   align="left"
                   sx={{
-                    fontFamily: "Outfit",
-                    fontSize: "15px",
+                    fontFamily: agentStyles?.fontStyle,
+                    fontSize: `${agentStyles?.fontSize}px`,
                     fontWeight: "400",
                     color: message?.isBot ? "#ffffff" : "#000000",
                   }}
@@ -94,13 +89,12 @@ export const Chats = ({ messages }) => {
                   {message === lastMessage && message?.isBot ? (
                     <TypeAnimation
                       sequence={[message.text]}
-                      speed={150}
+                      speed={getSpeed(agentStyles?.typingSpeed)}
                       cursor={false}
                     />
                   ) : (
                     message?.text
                   )}
-                  {/* {message?.text} */}
                 </Typography>
               </Box>
             </Box>

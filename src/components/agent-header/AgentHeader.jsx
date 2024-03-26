@@ -12,8 +12,8 @@ export const AgentHeader = ({ handleShowAgent }) => {
       className="header"
       sx={{
         width: "100%",
-        overflow: "hidden",
-        borderRadius: "26px",
+        // overflow: "hidden",
+        borderRadius: "20px",
         // backgroundColor: "green",
         position: "relative",
       }}
@@ -97,7 +97,6 @@ export const AgentHeader = ({ handleShowAgent }) => {
           bottom: "20%",
           left: "45%",
           fontFamily: "Outfit",
-          fontSize: "31px",
           fontWeight: "500",
           color: "#ffffff",
           fontSize: "26px",
@@ -118,6 +117,7 @@ export const AgentHeader = ({ handleShowAgent }) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          overflow: "hidden",
         }}
       >
         <img

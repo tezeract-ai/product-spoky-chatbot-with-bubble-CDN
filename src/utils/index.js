@@ -1,7 +1,7 @@
 const IP = "64.23.166.132:8005";
 export const sendQuery = async (queryObject) => {
   const formData = new FormData();
-  formData.append("query", queryObject?.userMessage);
+  formData.append("query", queryObject?.query);
   formData.append("chatbot_id", queryObject?.agentId);
   formData.append("vertical", queryObject?.agentRole);
   formData.append("user_id", queryObject?.userId);
@@ -31,4 +31,18 @@ export const sendQuery = async (queryObject) => {
 
 export const generateUUID = () => {
   return Math.random().toString(36).substring(2, 15);
+};
+
+export const getSpeed = (type) => {
+  console.log(type);
+  if (type === "Slow") {
+    return 400;
+  }
+  if (type === "Medium") {
+    return 300;
+  }
+  if (type === "Fast") {
+    return 150;
+  }
+  return 150;
 };
